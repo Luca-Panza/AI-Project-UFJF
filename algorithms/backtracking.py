@@ -91,11 +91,7 @@ def print_solution(path, applied, tried):
 
 
 def backtracking(initial_state, depth_limit=None, order="asc"):
-    """Retorna (caminho, regras aplicadas, tentadas) se achar solução, ou None.
-
-    order="asc"  → tenta r1 antes de r16  (padrão)
-    order="desc" → tenta r16 antes de r1
-    """
+    """Retorna (caminho, regras aplicadas, tentadas) se achar solução, ou None."""
     if depth_limit is None:
         depth_limit = P
     path = [initial_state]  # caminho S-N; N = path[-1], pai(N) = path[-2]

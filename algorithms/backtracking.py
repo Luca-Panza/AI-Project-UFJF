@@ -30,7 +30,9 @@ Implementação fiel ao pseudocódigo:
 
     (*) r é aplicável a N se r(N) não está no caminho S-N (evita ciclos).
 
-A seleção do operador segue sempre a ordem crescente das regras: r1, r2, ..., r16.
+A seleção do operador segue a ordem definida pelo parâmetro `order`:
+  "asc"  → r1, r2, ..., r16  (padrão)
+  "desc" → r16, r15, ..., r1
 """
 
 from utils import RULES, INITIAL_STATE, is_goal, apply_rule, show_board
@@ -57,14 +59,18 @@ def remaining_rules(state, path, tried=None):
     return names
 
 
-def select_rule(state, path, tried):
-    """Seleciona o operador r de R(N): a regra de menor índice ainda não tentada
-    neste nó, cuja precondição é satisfeita e cujo resultado não está no caminho S-N.
-    Retorna (regra, novo_estado) ou (None, None) se R(N) é vazio."""
+def select_rule(state, path, tried, order="asc"):
+    """Seleciona o operador r de R(N).
+
+    order="asc"  → regra de menor índice (r1 primeiro)
+    order="desc" → regra de maior índice (r16 primeiro)
+
+    Retorna (regra, novo_estado) ou (None, None) se R(N) é vazio.
+    """
     remaining = remaining_rules(state, path, tried)
     if not remaining:
         return None, None
-    rule = remaining[0]
+    rule = remaining[-1] if order == "desc" else remaining[0]
     return rule, apply_rule(rule, state)
 
 
@@ -84,8 +90,12 @@ def print_solution(path, applied, tried):
         show_board(path[i + 1])
 
 
-def backtracking(initial_state, depth_limit=None):
-    """Retorna (caminho, regras aplicadas, tentadas) se achar solução, ou None."""
+def backtracking(initial_state, depth_limit=None, order="asc"):
+    """Retorna (caminho, regras aplicadas, tentadas) se achar solução, ou None.
+
+    order="asc"  → tenta r1 antes de r16  (padrão)
+    order="desc" → tenta r16 antes de r1
+    """
     if depth_limit is None:
         depth_limit = P
     path = [initial_state]  # caminho S-N; N = path[-1], pai(N) = path[-2]
@@ -101,7 +111,7 @@ def backtracking(initial_state, depth_limit=None):
             applied.pop()
 
         N = path[-1]
-        rule, new_state = select_rule(N, path, tried[-1])
+        rule, new_state = select_rule(N, path, tried[-1], order=order)
         if rule is not None:  # R(N) <> vazio
             tried[-1].add(rule)
             path.append(new_state)  # N := r(N)

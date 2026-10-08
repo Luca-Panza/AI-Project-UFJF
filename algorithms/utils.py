@@ -64,8 +64,9 @@ def _row(sq):
     """Linha (0, 1 ou 2) da casa sq."""
     return (sq - 1) // 3
 
-# Custo pela direção do movimento: brancas querem chegar à linha de baixo
-# (casas 7-8-9) e pretas à linha de cima (casas 1-2-3).
+# Custo pela direção do movimento: brancas (casas 1 e 3) querem chegar à linha
+# de baixo (casas 7 e 9) e pretas (casas 7 e 9) à linha de cima (casas 1 e 3).
+# A distância é medida em linhas do tabuleiro (linha 0 = 1-2-3, linha 2 = 7-8-9).
 #   aproxima da linha-objetivo → 1
 #   afasta da linha-objetivo   → 3
 # Num tabuleiro 3x3 todo salto de cavalo muda de linha, logo não existe

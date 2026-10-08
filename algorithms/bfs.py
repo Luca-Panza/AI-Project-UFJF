@@ -7,7 +7,7 @@ abertos como Fila (primeiro a entrar, primeiro a sair → BFS):
     Início
         Defina(abertos); S := raiz; Fracasso := F; Sucesso := F;
         Insere(S, abertos); Defina(fechados);
-    10|        Enquanto não (Sucesso ou Fracasso) faça
+            Enquanto não (Sucesso ou Fracasso) faça
             Se abertos = vazio então Fracasso := T;
             Senão
                 N := Primeiro(abertos); {Fila(primeiro)}
@@ -17,7 +17,7 @@ abertos como Fila (primeiro a entrar, primeiro a sair → BFS):
                         Escolha r de R(N); New(u);
                         u := r(N); Insere(u, abertos);
                         Atualiza R(N);
-    20|                    Fim-enquanto;
+                        Fim-enquanto;
                     Insere(N, fechados);
                 Fim-se;
             Fim-se;
@@ -25,9 +25,9 @@ abertos como Fila (primeiro a entrar, primeiro a sair → BFS):
     Fim.
 
 Parâmetros extras:
-  poda=True  → descarta estados cujo estado já está em abertos ou fechados
+  pruning=True  → descarta estados cujo estado já está em abertos ou fechados
                (evita ciclos e reexpansão; garante solução ótima)
-  poda=False → permite estados repetidos (árvore de busca "ingênua");
+  pruning=False → permite estados repetidos (árvore de busca "ingênua");
                use max_depth para impedir explosão combinatória
   max_depth  → profundidade máxima de expansão (None = ilimitado)
 
@@ -119,8 +119,8 @@ def bfs(initial_state, order="asc", pruning=True, max_depth=None):
     """
     Busca em largura (BFS).
 
-    poda=True  → estados em abertos/fechados são descartados (padrão)
-    poda=False → estados repetidos são permitidos; use max_depth para terminar
+    pruning=True  → estados em abertos/fechados são descartados (padrão)
+    pruning=False → estados repetidos são permitidos; use max_depth para terminar
     max_depth  → profundidade máxima de expansão (None = ilimitado)
 
     Retorna (path, applied, stats, node_tree, trace, goal_id) ou None se falhar.
@@ -212,7 +212,7 @@ def bfs(initial_state, order="asc", pruning=True, max_depth=None):
     if not success:
         if pruning:
             return None   # busca exaustiva sem solução → fracasso real
-        # poda=False com max_depth: retorna a árvore explorada mesmo sem solução
+        # pruning=False com max_depth: retorna a árvore explorada mesmo sem solução
         # (útil para visualizar a estrutura sem poda)
         return None, None, stats, node_tree, trace, None
 
@@ -327,7 +327,7 @@ def plot_tree(path, node_tree, goal_id, order="asc", pruning=True, figsize=(22, 
     """
     Plota a árvore de busca BFS com matplotlib + networkx.
 
-    Usa node_id como identificador dos nós (funciona com poda=True e poda=False).
+    Usa node_id como identificador dos nós (funciona com pruning=True e pruning=False).
     Nós do caminho solução são destacados em laranja.
     Quando goal_id=None (sem solução encontrada), exibe apenas a árvore explorada.
     """

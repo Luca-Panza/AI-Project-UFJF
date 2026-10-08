@@ -1,8 +1,5 @@
 """Busca em Profundidade (DFS) para o problema dos 4 cavalos (tabuleiro 3x3).
 
-Implementação fiel ao pseudocódigo do Algoritmo Básico de Busca, com
-abertos como Pilha (primeiro a entrar, último a sair → DFS):
-
     Algoritmo Básico de Busca
     Início
         Defina(abertos); S := raiz; Fracasso := F; Sucesso := F;
@@ -208,7 +205,7 @@ def dfs(initial_state, order="asc", pruning=True, max_depth=None):
     if not success:
         if pruning:
             return None   # busca exaustiva sem solução → fracasso real
-        # poda=False com max_depth: retorna a árvore explorada mesmo sem solução
+        # pruning=False com max_depth: retorna a árvore explorada mesmo sem solução
         # (útil para visualizar a estrutura sem poda)
         return None, None, stats, node_tree, trace, None
 

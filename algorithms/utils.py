@@ -6,6 +6,7 @@ Estruturas comuns a todos os algoritmos de busca:
 - is_goal: teste de objetivo
 - apply_rule: aplica uma regra a um estado, gerando o novo estado
 - show_board: imprime o tabuleiro
+- COST_FUNCTIONS / path_cost: funções de custo real das regras
 """
 
 # Regras de transição: cada regra é um movimento de cavalo (origem, destino),
@@ -53,3 +54,48 @@ def apply_rule(rule, state):
 def show_board(state):
     for row in ((1, 2, 3), (4, 5, 6), (7, 8, 9)):
         print(" ".join(state[sq] or "--" for sq in row))
+
+
+# ── Funções de custo real (Busca Ordenada) ────────────────────────────────────
+# Cada função recebe (rule, state) e devolve o custo (inteiro > 0) de aplicar a
+# regra ao estado. `state` é o estado ANTES do movimento.
+
+def _row(sq):
+    """Linha (0, 1 ou 2) da casa sq."""
+    return (sq - 1) // 3
+
+# Custo pela direção do movimento: brancas querem chegar à linha de baixo
+# (casas 7-8-9) e pretas à linha de cima (casas 1-2-3).
+#   aproxima da linha-objetivo → 1
+#   afasta da linha-objetivo   → 3
+# Num tabuleiro 3x3 todo salto de cavalo muda de linha, logo não existe
+# movimento "lateral" (mesma distância); a função só devolve 1 ou 3.
+def cost_direction(rule, state):
+    origin, dest = RULES[rule]
+    piece = state[origin]
+    goal_row = 2 if piece[0] == "b" else 0
+    before = abs(_row(origin) - goal_row)
+    after = abs(_row(dest) - goal_row)
+    return 1 if after < before else 3
+
+# Custo pela casa de destino, independente da peça:
+#   canto (1, 3, 7, 9) → 1
+#   borda (2, 4, 6, 8) → 2
+# (a casa central 5 nunca é alcançada por um cavalo no 3x3)
+def cost_destination(rule, state):
+    _, dest = RULES[rule]
+    return 1 if dest in (1, 3, 7, 9) else 2
+
+COST_FUNCTIONS = {
+    "direcao": cost_direction,
+    "destino": cost_destination,
+}
+
+# Custo total de uma sequência de regras aplicada a partir de initial_state.
+def path_cost(applied, initial_state, cost):
+    cost_fn = COST_FUNCTIONS[cost] if isinstance(cost, str) else cost
+    state, total = initial_state, 0
+    for rule in applied:
+        total += cost_fn(rule, state)
+        state = apply_rule(rule, state)
+    return total
